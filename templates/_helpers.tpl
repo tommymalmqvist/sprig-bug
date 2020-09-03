@@ -68,7 +68,7 @@ Generate certificates for secret server
 {{- define "test.gen-certs" -}}
 {{- $test := include "gen-altnames-vars" $ -}}
 {{- $test2 := $test | trimSuffix "," | splitList "," -}}
-{{- $test3 := (list "server1" "server2") -}}
+{{- $test3 := (list "test-test-0" "test-test-1") -}}
 {{- $test4 := $test2 | join "," -}}
 {{- $altNames := list (typeOf $test3) -}}
 {{- $ca := genCA "Secret" 365 -}}
@@ -112,7 +112,7 @@ aa_kind: TYPEOF   {{ typeOf $test4 }}
 
 {{/* Generates a list of altNames */}}
 {{- define "gen-altnames-vars" -}}
-{{- range $i := until 5 }}{{ $.Release.Name }}-{{ $.Chart.Name }}-{{$i}},{{ end }}
+{{- range $i := until 2 }}{{ $.Release.Name }}-{{ $.Chart.Name }}-{{$i}},{{ end }}
 {{- end }}
 
 {{- define "gen-altnames" -}}
