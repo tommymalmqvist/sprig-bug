@@ -66,13 +66,10 @@ Create the name of the service account to use
 Generate certificates for secret server
 */}}
 {{- define "test.gen-certs" -}}
-{{- $test := include "gen-altnames-vars" $ -}}
-{{- $test2 := $test | trimSuffix "," | splitList "," -}}
-{{- $test3 := (list "test-test-0" "test-test-1") -}}
-{{- $test4 := $test2 | join "," -}}
-{{- $altNames := list (typeOf $test3) -}}
+{{- $servers := include "gen-altnames-vars" $ -}}
+{{- $altNames := $servers | trimSuffix "," | splitList "," | concat -}}
 {{- $ca := genCA "Secret" 365 -}}
-{{- $server := genSignedCert "" nil $test3 365 $ca -}}
+{{- $server := genSignedCert "" nil $altNames 365 $ca -}}
 {{- $client := genSignedCert "" nil nil 365 $ca -}}
 ca.crt: {{ $ca.Cert | b64enc }}
 ca.key: {{ $ca.Key | b64enc }}
@@ -83,36 +80,15 @@ client.key: {{ $client.Key | b64enc }}
 aa_:
 aa_: TEST 1
 aa_: ------
-aa_plain: OUTPUT   {{ $test }}
-aa_printf: TYPE     {{ printf "%t" $test }}
-aa_kind: KIND     {{ kindOf $test }}
-aa_kind: TYPEOF   {{ typeOf $test }}
-aa_:
-aa_: TEST 2
-aa_: ------
-aa_plain: OUTPUT   {{ $test }}
-aa_printf: TYPE     {{ printf "%t" $test2 }}
-aa_kind: KIND     {{ kindOf $test2 }}
-aa_kind: TYPEOF   {{ typeOf $test2 }}
-aa_:
-aa_: TEST 3 - CORRECT
-aa_: ------
-aa_plain: OUTPUT   {{ $test3 }}
-aa_printf: TYPE     {{ printf "%t" $test3 }}
-aa_kind: KIND     {{ kindOf $test3 }}
-aa_kind: TYPEOF   {{ typeOf $test3 }}
-aa_:
-aa_: TEST 4
-aa_: ------
-aa_plain: OUTPUT   {{ $test4 }}
-aa_printf: TYPE     {{ printf "%t" $test4 }}
-aa_kind: KIND     {{ kindOf $test4 }}
-aa_kind: TYPEOF   {{ typeOf $test4 }}
+aa_plain: OUTPUT   {{ $altNames }}
+aa_printf: TYPE     {{ printf "%t" $altNames }}
+aa_kind: KIND     {{ kindOf $altNames }}
+aa_kind: TYPEOF   {{ typeOf $altNames }}
 {{- end -}}
 
 {{/* Generates a list of altNames */}}
 {{- define "gen-altnames-vars" -}}
-{{- range $i := until 2 }}{{ $.Release.Name }}-{{ $.Chart.Name }}-{{$i}},{{ end }}
+{{- range $i := until 5 }}{{ $.Release.Name }}-{{ $.Chart.Name }}-{{$i}},{{ end }}
 {{- end }}
 
 {{- define "gen-altnames" -}}
